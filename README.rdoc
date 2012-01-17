@@ -2,12 +2,10 @@
 
 An attempt at implementing Ruby 1.9 Fibers[http://ruby-doc.org/core-1.9.3/Fiber.html] in Macruby using {Grand Central Dispatch}[http://developer.apple.com/library/mac/#documentation/Performance/Reference/GCD_libdispatch_Ref/Reference/reference.html].
 
-== Spec
-
-==== Results from Fibers Rubyspec:
+==== Results from running Fibers Rubyspec:
 4 files, 24 examples, 47 expectations, 4 failures, 0 errors
 
-=== Failure Notes
+=== Spec Failure Notes
 
 "raises a FiberError when transferring to a Fiber which resumes itself"
 * The FiberError is raised, but on a different dispatch queue to the caller. Need to somehow raise the error on the same dispatch queue as the caller.
