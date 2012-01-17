@@ -1,54 +1,47 @@
 class FiberError < StandardError; end
 
 class Fiber
-  attr_accessor :name
   def initialize &block
     raise ArgumentError, 'new Fiber requires a block' unless block_given?
     @block = block
-    
+                
     @yield_sem = Dispatch::Semaphore.new(0)
     @resume_sem = Dispatch::Semaphore.new(0)
     
     @fiber_queue = Dispatch::Queue.new "#{__id__}"
-    @fiber_queue.async {@yield_sem.wait}
     Fiber[@fiber_queue.label]= self
-
-    execute_block
   end
   
   private
   def execute_block
-    @completed = false
-    @fiber_queue.async do 
+    @fiber_queue.async do
       @result ||= @block.call(*@args)
       unless self == Fiber[:root_fiber]
         Fiber.delete_fiber(@fiber_queue.label)
         @block = nil # when @block becomes nil the fiber is dead
       end
-      @completed = true
       @resume_sem.signal
       @result
-    end
+    end    
   end
+  
   
   public
   def resume *args
     raise FiberError, 'dead fiber called' if @block.nil?
-    # raise FiberError, 'double resume' if @has_transferred == true
-    
-    execute_block if @completed # root fiber never dies
-    
+
     if @args.nil?
       @args = args
     else
       @result = args.size > 1 ? args : args.first
     end
 
-    @yield_sem.signal
-    @resume_sem.wait unless @has_transferred == :complete
+    @block_started ? @yield_sem.signal : @block_started = true and execute_block
+    @resume_sem.wait unless @transfer_state == :re_activated
+
     @result
   end
-
+  
   # yield is called from inside the block passed to Fiber.new and executes within the @fiber_queue
   def yield *args
     @result = args.size > 1 ? args : args.first
@@ -65,14 +58,14 @@ class Fiber
       self.resume *args
     else
       resume = lambda do |previous_fiber|
-        @has_transferred = :complete if self == previous_fiber && !previous_fiber.nil? 
+        @transfer_state = :re_activated if self == previous_fiber && !previous_fiber.nil? 
         self.resume *args
       end
           
       fiber.instance_eval do
-        @has_transferred = true
+        @transfer_state = true
         self.yield *resume.call(@transferred_from)      
-        @resume_sem.wait and @has_transferred = nil if @has_transferred == :complete
+        @resume_sem.wait and @transfer_state = nil if @transfer_state == :re_activated
       end
     end
   end
