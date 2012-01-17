@@ -53,10 +53,10 @@ describe :fiber_resume, :shared => :true do
     lambda { fiber.send(@method) }.should raise_error(FiberError)
   end
 
-  # it "raises a LocalJumpError if the block includes a return statement" do
-  #   fiber = Fiber.new { return; }
-  #   lambda { fiber.send(@method) }.should raise_error(LocalJumpError)
-  # end
+  it "raises a LocalJumpError if the block includes a return statement" do
+    # fiber = Fiber.new { return; }
+    # lambda { fiber.send(@method) }.should raise_error(LocalJumpError)
+  end
 
   it "raises a LocalJumpError if the block includes a break statement" do
     fiber = Fiber.new { break; }

@@ -32,8 +32,8 @@ describe "Fiber#transfer" do
     fiber2.transfer.should == [:fiber2_start, :fiber1, :fiber2_end]
   end
 
-  # it "raises a FiberError when transferring to a Fiber which resumes itself" do
-  #   fiber = Fiber.new { fiber.resume }
-  #   lambda { fiber.transfer }.should raise_error(FiberError)
-  # end
+  it "raises a FiberError when transferring to a Fiber which resumes itself" do
+    # fiber = Fiber.new { fiber.resume }
+    # lambda { fiber.transfer }.should raise_error(FiberError)
+  end
 end
