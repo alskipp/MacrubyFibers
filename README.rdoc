@@ -2,20 +2,16 @@
 
 An attempt at implementing Ruby 1.9 Fibers[http://ruby-doc.org/core-1.9.3/Fiber.html] in Macruby using {Grand Central Dispatch}[http://developer.apple.com/library/mac/#documentation/Performance/Reference/GCD_libdispatch_Ref/Reference/reference.html].
 
-==== Results from running Fibers Rubyspec:
-4 files, 24 examples, 47 expectations, 4 failures, 0 errors
+=== Results from running Fibers Rubyspec:
+4 files, 24 examples, 47 expectations, 3 failures, 0 errors
 
 === Spec Failure Notes
 
-"raises a FiberError when transferring to a Fiber which resumes itself"
-* The FiberError is raised, but on a different dispatch queue to the caller. Need to somehow raise the error on the same dispatch queue as the caller.
+["raises a FiberError when transferring to a Fiber which resumes itself"]
+The FiberError is raised, but on a different dispatch queue to the caller. Need to somehow raise the error on the same dispatch queue as the caller.
 
-"raises a LocalJumpError if the block includes a return statement"
-* Not implemented
-* Test causes a Macruby crash - EXC_CRASH (SIGABRT)
+["raises a LocalJumpError if the block includes a return statement"]
+Not implemented - Test causes a Macruby crash - EXC_CRASH (SIGABRT)
 
-"raises a LocalJumpError if the block includes a break statement"
-* Not implemented
-
-"raises a FiberError if the Fiber has transfered control to another Fiber"
-* Not implemented
+["raises a LocalJumpError if the block includes a break statement"]
+Not implemented
