@@ -1,4 +1,4 @@
-=== Macruby Fibers
+= Macruby Fibers
 
 An attempt at implementing Ruby 1.9 Fibers in Macruby using {Grand Central Dispatch}[http://developer.apple.com/library/mac/#documentation/Performance/Reference/GCD_libdispatch_Ref/Reference/reference.html].
 
