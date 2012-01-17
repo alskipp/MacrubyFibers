@@ -33,7 +33,7 @@ describe "Fiber#transfer" do
   end
 
   it "raises a FiberError when transferring to a Fiber which resumes itself" do
-    # fiber = Fiber.new { fiber.resume }
-    # lambda { fiber.transfer }.should raise_error(FiberError)
+    fiber = Fiber.new { fiber.resume }
+    lambda { fiber.transfer }.should raise_error(FiberError)
   end
 end
