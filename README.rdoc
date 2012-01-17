@@ -3,7 +3,7 @@
 An attempt at implementing Ruby 1.9 Fibers[http://ruby-doc.org/core-1.9.3/Fiber.html] in Macruby using {Grand Central Dispatch}[http://developer.apple.com/library/mac/#documentation/Performance/Reference/GCD_libdispatch_Ref/Reference/reference.html].
 
 === Results from running Fibers Rubyspec:
-4 files, 24 examples, 47 expectations, 3 failures, 0 errors
+4 files, 25 examples, 51 expectations, 3 failures, 0 errors
 
 === Spec Failure Notes
 
