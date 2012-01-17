@@ -9,15 +9,15 @@ An attempt at implementing Ruby 1.9 Fibers[http://ruby-doc.org/core-1.9.3/Fiber.
 
 === Failure Notes
 
-==== "raises a FiberError when transferring to a Fiber which resumes itself"
+"raises a FiberError when transferring to a Fiber which resumes itself"
 * The FiberError is raised, but on a different dispatch queue to the caller. Need to somehow raise the error on the same dispatch queue as the caller.
 
-==== "raises a LocalJumpError if the block includes a return statement"
+"raises a LocalJumpError if the block includes a return statement"
 * Not implemented
 * Test causes a Macruby crash - EXC_CRASH (SIGABRT)
 
-==== "raises a LocalJumpError if the block includes a break statement"
+"raises a LocalJumpError if the block includes a break statement"
 * Not implemented
 
-==== "raises a FiberError if the Fiber has transfered control to another Fiber"
+"raises a FiberError if the Fiber has transfered control to another Fiber"
 * Not implemented
