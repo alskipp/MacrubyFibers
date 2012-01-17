@@ -1,0 +1,15 @@
+=== Macruby Fibers
+
+An attempt at implementing Ruby 1.9 Fibers in Macruby using {Grand Central Dispatch}[http://developer.apple.com/library/mac/#documentation/Performance/Reference/GCD_libdispatch_Ref/Reference/reference.html].
+
+== Spec
+
+From Fibers Rubyspec:
+4 files, 24 examples, 46 expectations, 4 failures, 0 errors
+
+2 tests can not currently run:
+"raises a FiberError when transferring to a Fiber which resumes itself" …
+Causes a deadlock.
+
+"raises a LocalJumpError if the block includes a return statement" …
+Causes a Macruby crash - EXC_CRASH (SIGABRT)
