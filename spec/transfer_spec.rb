@@ -31,6 +31,28 @@ describe "Fiber#transfer" do
     fiber2.resume.should == [:fiber2_start, :fiber1]
     fiber2.transfer.should == [:fiber2_start, :fiber1, :fiber2_end]
   end
+  
+  it "can transfer control to a Fiber passed as argument" do
+    @states = []
+    fiber1 = Fiber.new do |fiber|
+      @states << :fiber1_start
+      fiber.transfer(Fiber.current)
+      @states << :fiber1_finishing
+      :fiber1_end
+    end
+    fiber2 = Fiber.new do |fiber|
+      @states << :fiber2_start
+      fiber.transfer
+      @states << :fiber2_finishing
+      :fiber2_end
+    end
+
+    fiber1.resume(fiber2).should == :fiber1_end
+    @states.should == [:fiber1_start, :fiber2_start, :fiber1_finishing]
+
+    fiber2.resume.should == :fiber2_end
+    @states.should == [:fiber1_start, :fiber2_start, :fiber1_finishing, :fiber2_finishing]
+  end
 
   it "raises a FiberError when transferring to a Fiber which resumes itself" do
     fiber = Fiber.new { fiber.resume }
