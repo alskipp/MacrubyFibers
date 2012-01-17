@@ -1,6 +1,9 @@
 = Macruby Fibers
 
-An attempt to implement Ruby 1.9 Fibers[http://ruby-doc.org/core-1.9.3/Fiber.html] in Macruby using {Grand Central Dispatch}[http://developer.apple.com/library/mac/#documentation/Performance/Reference/GCD_libdispatch_Ref/Reference/reference.html] (GCD).
+Ruby 1.9 Fibers[http://ruby-doc.org/core-1.9.3/Fiber.html] in Macruby using {Grand Central Dispatch}[http://developer.apple.com/library/mac/#documentation/Performance/Reference/GCD_libdispatch_Ref/Reference/reference.html] (GCD).
+
+== Is it worth it?
+Perhaps. The goal was to pass as many of the spec tests as possible (nearly there). The implementation will certainly not be as lightweight as MRI, but it should allow Fiber code to run.
 
 == Implementation Info
 Each fiber is given its own serial dispatch queue which is suspended and resumed as needed. Consequently, this means that each fiber is backed by a thread (which is not the case in MRI Ruby). However as GCD is in control of thread creation and allocation, this does not necessarily mean that a new thread is created every time a Fiber is created. GCD can reuse threads that were created for Fibers which have subsequently been used and are no longer alive. Threads can not be reallocated to new Fibers if previous Fibers are still alive, which means it is possible that multitudes of threads will be created in certain circumstances.
