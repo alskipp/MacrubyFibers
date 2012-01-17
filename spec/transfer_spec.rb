@@ -32,6 +32,7 @@ describe "Fiber#transfer" do
     fiber2.transfer.should == [:fiber2_start, :fiber1, :fiber2_end]
   end
   
+  # additional test
   it "can transfer control to a Fiber passed as argument" do
     @states = []
     fiber1 = Fiber.new do |fiber|
