@@ -4,12 +4,12 @@ class Fiber
   def initialize &block
     raise ArgumentError, 'new Fiber requires a block' unless block_given?
     @block = block
-                    
+
     @yield_sem = Dispatch::Semaphore.new(0)
     @resume_sem = Dispatch::Semaphore.new(0)
     
     @fiber_queue = Dispatch::Queue.new "#{__id__}"
-    Fiber[@fiber_queue.label]= self
+    Fiber[@fiber_queue.label]= self    
   end
   
   private
@@ -27,9 +27,9 @@ class Fiber
   
   
   public
-  def resume *args
+  def resume *args    
     raise FiberError, 'dead fiber called' if @block.nil?
-    if Dispatch::Queue.current.label == @fiber_queue.label && @transfer_state != :re_activated
+    if (Dispatch::Queue.current.label == @fiber_queue.label && @transfer_state != :re_activated) || @transfer_state == :de_activated
       @resume_sem.signal
       # The following Exceptions are often raised on the @fiber_queue serial dispatch queue
       # When this happens the calling object is unaware of the raised Exception
@@ -73,6 +73,7 @@ class Fiber
       end
       
       fiber.instance_eval do
+        @transfer_state = :de_activated if @transfer_state.nil?
         self.yield *resume.call(@transferred_from)
         @resume_sem.wait if @transfer_state == :re_activated
       end
@@ -113,11 +114,5 @@ class Fiber
   
   @@__fibers__ = {} # create class hash to enable look-up of individual fibers when using 'Fiber.yield'
   @@fibers_queue = Dispatch::Queue.new('fibers_queue') # create serial queue to access class hash
-  Fiber[:root_fiber]= Fiber.new { |*args| args.size > 1 ? args : args.first } # create root fiber. Default behaviour is to return arguments it receives
+  Fiber[:root_fiber]= Fiber.new { |*args| args.size > 1 ? args : args.first } # create root fiber. Default behaviour is to return arguments it receives  
 end
-
-## FIXME: the following code should raise a 'double resume' error 
-# fiber1 = Fiber.new { true }
-# fiber2 = Fiber.new { fiber1.transfer; Fiber.yield }
-# fiber2.resume
-# fiber2.resume # should raise FiberError: double resume
