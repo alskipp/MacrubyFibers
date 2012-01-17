@@ -31,3 +31,23 @@ Macruby does not currently raise LocalJumpError errors for the following code:
     pr.call # causes uncaught Objective-C/C++ exception... EXC_CRASH (SIGABRT)
     
 Therefore, LocalJumpError can not currently be implemented within MacrubyFibers.
+
+== Other Known Issues
+There is a variable scoping issue when using Macruby with GCD queues which can cause an EXC_BAD_ACCESS crash when mutating a collection class object that is a local variable. Instance variables and global variables are not affected and can be safely mutated. This also applies to Macruby Fibers. Examples below:
+
+    # The following code can currently cause a crash, or unexpected results
+    a = []
+    f = Fiber.new { a << 1 }
+    f.resume
+    
+    # The following 2 examples are safe
+    @a = []
+    f = Fiber.new { @a << 1 }
+    f.resume
+    
+    # or:
+    $a = []
+    f = Fiber.new { $a << 1 }
+    f.resume
+    
+Due to this current issue, the Ruby Fiber specs have been adjusted to use instance variables (rather than local variables) for any test that involves mutating an array. If mspec tests are run using the unadjusted Ruby Fiber specs, a crash will occur.
