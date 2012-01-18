@@ -34,7 +34,7 @@ class Fiber
       # The following Exceptions are often raised on the @fiber_queue serial dispatch queue
       # When this happens the calling object is unaware of the raised Exception
       # Need a means of raising the Exception on the dispatch queue of the caller
-      raise FiberError, 'double resume' if @transfer_state.nil?
+      raise FiberError, 'double resume' if @transfer_state == :de_activated
       raise FiberError, 'dead fiber called'
     end
 
