@@ -12,7 +12,6 @@ class Fiber
     Fiber[@fiber_queue.label]= self    
   end
   
-  private
   def execute_block
     @fiber_queue.async do
       @result ||= @block.call(*@args)
@@ -25,8 +24,8 @@ class Fiber
     end    
   end
   
+  private :execute_block
   
-  public
   def resume *args    
     raise FiberError, 'dead fiber called' if @block.nil?
     if (Dispatch::Queue.current.label == @fiber_queue.label && @transfer_state != :re_activated) || @transfer_state == :de_activated
