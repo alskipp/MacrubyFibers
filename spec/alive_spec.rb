@@ -35,9 +35,9 @@ describe "Fiber#alive?" do
   it "always returns false for a dead Fiber" do
     fiber = Fiber.new { true }
     fiber.resume
-    lambda { fiber.resume }.should raise_error(FiberError)
+    lambda { fiber.resume }.should raise_error(FiberError, 'dead fiber called')
     fiber.alive?.should be_false
-    lambda { fiber.resume }.should raise_error(FiberError)
+    lambda { fiber.resume }.should raise_error(FiberError, 'dead fiber called')
     fiber.alive?.should be_false
     fiber.alive?.should be_false
   end

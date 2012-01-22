@@ -50,7 +50,7 @@ describe :fiber_resume, :shared => :true do
   it "raises a FiberError if the Fiber is dead" do
     fiber = Fiber.new { true }
     fiber.send(@method)
-    lambda { fiber.send(@method) }.should raise_error(FiberError)
+    lambda { fiber.send(@method) }.should raise_error(FiberError, 'dead fiber called')
   end
 
   it "raises a LocalJumpError if the block includes a return statement" do
