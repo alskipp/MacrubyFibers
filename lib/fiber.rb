@@ -58,25 +58,26 @@ class Fiber
   end
   
   def transfer *args    
-    fiber = Fiber.current # the fiber in whose context the transfer call was made. Should be given a yield call to suspend execution of its block
-    @transferred_from = fiber
-        
-    if Fiber[:root_fiber] == fiber # check for transfer to root fiber
-      @transfer_state = :activated
+    @parent_fiber = Fiber.current # the fiber in whose context the transfer call was made. Should be given a yield call to suspend execution of its block
+
+    if Fiber[:root_fiber] == @parent_fiber # check for transfer to root fiber
+      @transfer_state = :activated      
       self.resume *args
     else
 
-      resume = Proc.new do |previous_fiber|
-        self == previous_fiber ? @transfer_state = :re_activated : @transfer_state = :activated
+      resume_proc = Proc.new do |grand_parent_fiber|
+        self == grand_parent_fiber ? @transfer_state = :re_activated : @transfer_state = :activated
         self.resume *args
       end
-      
-      fiber.instance_eval do
+
+      # the 'instance_eval' below, could be avoided by creating an instance method with the same functionality
+      # but this would add an unwanted public method to the Fiber class
+      @parent_fiber.instance_eval do
         @transfer_state = :de_activated if @transfer_state.nil?
-        self.yield *resume.call(@transferred_from)
+        self.yield *resume_proc.call(@parent_fiber)
         @resume_sem.wait if @transfer_state == :re_activated
       end
-  
+      
     end
   end
   
