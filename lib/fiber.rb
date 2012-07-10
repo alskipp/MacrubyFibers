@@ -12,9 +12,11 @@ class Fiber
     Fiber[@fiber_queue.label]= self    
   end
   
-  def execute_block
-    @fiber_queue.async do
-      @result ||= @block.call(*@args)
+  def execute_block *args
+    @block_started = true
+    @fiber_queue.async do      
+      @result ||= @block.call(*args)
+      @block_started = false # required to prevent the root fiber from deadlocking
       unless self == Fiber[:root_fiber]
         Fiber.delete_fiber(@fiber_queue.label)
         @block = nil # when @block becomes nil the fiber is dead
@@ -26,7 +28,7 @@ class Fiber
   
   private :execute_block
   
-  def resume *args    
+  def resume *args
     raise FiberError, 'dead fiber called' if @block.nil?
     if (Dispatch::Queue.current.label == @fiber_queue.label && @transfer_state != :re_activated) || @transfer_state == :de_activated
       @resume_sem.signal
@@ -37,15 +39,14 @@ class Fiber
       raise FiberError, 'dead fiber called'
     end
 
-    if @args.nil?
-      @args = args
-    else
+    if @block_started
       @result = args.size > 1 ? args : args.first
+      @yield_sem.signal
+    else
+      execute_block *args
     end
-
-    @block_started ? @yield_sem.signal : @block_started = true and execute_block
+    
     @resume_sem.wait unless @transfer_state == :re_activated
-
     @result
   end
   
