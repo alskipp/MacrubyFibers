@@ -112,6 +112,6 @@ class Fiber
   end
   
   @@__fibers__ = {} # create class hash to enable look-up of individual fibers when using 'Fiber.yield'
-  @@fibers_queue = Dispatch::Queue.new('fibers_queue') # create serial queue to access class hash
+  @@fibers_queue = Dispatch::Queue.new('fibers_class_queue') # create serial queue to access class hash
   Fiber[:root_fiber]= Fiber.new { |*args| args.size > 1 ? args : args.first } # create root fiber. Default behaviour is to return arguments it receives  
 end
