@@ -81,7 +81,7 @@ class Fiber
   end
   
   def alive?
-    !@block.nil?
+    !!@block
   end
   
   def inspect
