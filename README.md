@@ -1,7 +1,7 @@
 Macruby Fibers
 ===
 
-Ruby 1.9 Fibers(http://ruby-doc.org/core-1.9.3/Fiber.html) in Macruby using [Grand Central Dispatch](http://developer.apple.com/library/mac/#documentation/Performance/Reference/GCD_libdispatch_Ref/Reference/reference.html]) (GCD).
+Ruby 1.9 [Fibers](http://ruby-doc.org/core-1.9.3/Fiber.html) in Macruby using [Grand Central Dispatch](http://developer.apple.com/library/mac/#documentation/Performance/Reference/GCD_libdispatch_Ref/Reference/reference.html]) (GCD).
 
 
 ### Is it worth it?
